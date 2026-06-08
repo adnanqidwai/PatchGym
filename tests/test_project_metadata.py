@@ -52,11 +52,18 @@ def test_design_doc_is_present() -> None:
     assert "RLM-PatchPlan" in text
 
 
-def test_readme_mentions_related_retrieval_project() -> None:
+def test_readme_avoids_meta_release_sections() -> None:
     readme = (ROOT / "README.md").read_text()
 
-    assert "Related Project" in readme
-    assert "RLM-GEPA Retrieval" in readme
+    banned = (
+        "Repository Hygiene",
+        "Current Limitations",
+        "Related Project",
+        "Why This Exists",
+        "resume",
+        "sibling project",
+    )
+    assert not any(phrase in readme for phrase in banned)
 
 
 def test_public_files_do_not_mention_secret_literals() -> None:

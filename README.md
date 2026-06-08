@@ -6,19 +6,9 @@ The project also includes `RLM-PatchPlan`, an optional DSPy RLM + GEPA harness t
 
 PatchGym can also be used as a dependency-free RL-style coding environment: an episode exposes
 visible repository state, accepts file/action steps, and returns verifier-grounded terminal rewards.
-An optional Prime Intellect `verifiers` adapter is provided for v1 Taskset/Harness workflows.
+An optional verifier-library adapter is provided for v1 Taskset/Harness workflows.
 
 See [docs/design.md](docs/design.md) for the repository architecture and verifier stack.
-
-## Why This Exists
-
-Most small coding-agent demos only report whether visible tests pass. PatchGym is designed to expose more diagnostic failure modes:
-
-- passing public tests while failing hidden tests;
-- breaking a public API contract while fixing local behavior;
-- touching too many files for a tiny bug;
-- confusing bug-family labels even when the root cause is found;
-- prompt optimization improving a dev split but needing held-out verification.
 
 ## Features
 
@@ -31,7 +21,7 @@ Most small coding-agent demos only report whether visible tests pass. PatchGym i
 - Black-box agent runner with trace logs and final repo snapshots.
 - RL-style `reset`/`step` environment API with read/write/test/submit actions.
 - Sparse or layered verifier rewards.
-- Optional Prime Intellect `verifiers` taskset adapter.
+- Optional verifier-library taskset adapter.
 - OpenAI-compatible chat-completions adapter.
 - Optional DSPy RLM/GEPA optimizer for structured patch-plan prediction.
 - Markdown and JSON summaries.
@@ -44,7 +34,7 @@ source .venv/bin/activate
 pip install -e '.[dev,agent,dspy]'
 ```
 
-For the core generator/verifier/env path, `pip install -e '.[dev]'` is enough. The OpenAI-compatible agent path uses the `agent` extra. The RLM/GEPA optimizer uses the `dspy` extra. The Prime Intellect adapter uses the `verifiers` extra.
+For the core generator/verifier/env path, `pip install -e '.[dev]'` is enough. The OpenAI-compatible agent path uses the `agent` extra. The RLM/GEPA optimizer uses the `dspy` extra. The verifier-library adapter uses the `verifiers` extra.
 
 ## Generate Tasks
 
@@ -203,7 +193,7 @@ python3 -m patchgym episode \
 
 Each line in `actions.jsonl` is a JSON action object.
 
-## Prime Intellect Verifiers Adapter
+## Verifier Library Adapter
 
 Install the optional adapter dependency:
 
@@ -218,7 +208,7 @@ The adapter module is `patchgym.verifiers_adapter`. It exposes:
 - `PatchGymTasksetConfig`;
 - pure helpers such as `score_patchgym_completion`.
 
-The adapter follows Prime's v1 Taskset/Harness shape and scores a model response that returns the
+The adapter follows the v1 Taskset/Harness shape and scores a model response that returns the
 same JSON edit schema used by the OpenAI-compatible agent:
 
 ```json
@@ -294,29 +284,3 @@ python3 -m compileall -q patchgym rlm_patchplan tests
 ```
 
 The test suite covers deterministic generation, verifier behavior, runner behavior, OpenAI-compatible adapter parsing, RLM-PatchPlan scoring, and the harder task families.
-
-## Repository Hygiene
-
-Generated artifacts are ignored by git:
-
-- `generated_tasks*/`
-- `runs/`
-- `reports/`
-- `artifacts/`
-- `data/`
-- `.env`
-
-Keep committed examples small and deterministic. Do not commit provider keys, custom endpoint values, generated run logs, or large task dumps.
-
-## Current Limitations
-
-- Task repositories are synthetic and small.
-- The OpenAI-compatible agent currently uses full-file JSON replacements, not a richer tool protocol.
-- The verifier is deterministic but template-aware.
-- RLM-PatchPlan reports exact and canonicalized metrics, but results should still be interpreted by bug family and held-out split.
-
-## Related Project
-
-RLM-GEPA Retrieval is a sibling project that applies the same DSPy RLM + GEPA optimization pattern
-to retrieval-policy evaluation over a local corpus rather than coding-agent patch repair. It is
-intended to live as a separate repository.
