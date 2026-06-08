@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "patchgym"
+version = "0.1.0"
+description = "Procedurally generated coding-agent environment"
+requires-python = ">=3.10"
+readme = "README.md"
+dependencies = []
+
+[project.optional-dependencies]
+agent = ["openai>=1.0.0"]
+dspy = ["dspy>=3.2.0"]
+verifiers = ["verifiers>=0.1.14"]
+dev = ["pytest>=8.0.0"]
+
+[project.scripts]
+patchgym = "patchgym.cli:main"
+rlm-patchplan-generate = "rlm_patchplan.generate:main"
+rlm-patchplan-evaluate = "rlm_patchplan.evaluate:main"
+rlm-patchplan-optimize = "rlm_patchplan.optimize_gepa:main"
+rlm-patchplan-report = "rlm_patchplan.report:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["patchgym*", "rlm_patchplan*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
